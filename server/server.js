@@ -2,22 +2,23 @@ const express = require("express");
 require("dotenv").config();
 const morgan = require("morgan");
 const db = require("./db");
+const cors = require("cors");
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 //Get all restaurants
 app.get("/api/v1/restaurants", async (req, res) => {
   try {
     const results = await db.query("SELECT * FROM restaurants");
-    console.log(results);
-    console.log("rote handler ran");
+
     res.status(200).json({
       status: "open",
       results: results.rows.length,
       data: {
-        restaurant: results.rows,
+        restaurants: results.rows,
       },
     });
   } catch (error) {
@@ -34,7 +35,7 @@ app.get("/api/v1/restaurants/:id", async (req, res) => {
     res.status(200).json({
       status: "close",
       data: {
-        restaurant: results.rows[0],
+        restaurants: results.rows[0],
       },
     });
   } catch (error) {
@@ -44,7 +45,6 @@ app.get("/api/v1/restaurants/:id", async (req, res) => {
 
 //Create a restaurant
 app.post("/api/v1/restaurants", async (req, res) => {
-  console.log(req.body);
   try {
     const results = await db.query(
       "INSERT INTO restaurants (name, location, price_range) VALUES ($1, $2, $3) RETURNING * ",
@@ -54,7 +54,7 @@ app.post("/api/v1/restaurants", async (req, res) => {
     res.status(201).json({
       status: "close",
       data: {
-        restaurant: results.rows[0],
+        restaurants: results.rows[0],
       },
     });
   } catch (error) {
@@ -73,7 +73,7 @@ app.put("/api/v1/restaurants/:id", async (req, res) => {
     res.status(200).json({
       status: "close",
       data: {
-        restaurant: results.rows[0],
+        restaurants: results.rows[0],
       },
     });
   } catch (error) {
